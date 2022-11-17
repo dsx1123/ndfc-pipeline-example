@@ -1,0 +1,14 @@
+---
+vrf_attach_group:
+  all_leaf:
+    - ip_address: 172.31.186.156
+    - ip_address: 172.31.217.103
+    - ip_address: 172.31.217.101
+attach_group:
+  esxi:
+    - ip_address: 172.31.217.103
+      ports:
+        - Port-channel10
+    - ip_address: 172.31.217.101
+      ports:
+        - Port-channel10

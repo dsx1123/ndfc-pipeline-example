@@ -1,0 +1,40 @@
+---
+vrfs:
+  - vrf_name: &refvrf_red vrf_red
+    vrf_id: 50011
+    attach: []
+    attach_group: all_leaf
+  - vrf_name: vrf_blue
+    vrf_id: 50012
+    attach: []
+    attach_group: all_leaf
+networks:
+  - net_name: network_web
+    vrf_name: *refvrf_red
+    net_id: 30021
+    vlan_id: 2200
+    vlan_name: network_web_vlan2200
+    gw_ip_subnet: "10.1.1.1/24"
+    attach: []
+    attach_group: esxi
+  - net_name: network_app
+    vrf_name: *refvrf_red
+    net_id: 30022
+    vlan_id: 2201
+    vlan_name: network_web_vlan2201
+    gw_ip_subnet: "10.1.2.1/24"
+    attach_group: esxi
+  - net_name: network_db
+    vrf_name: *refvrf_red
+    net_id: 30023
+    vlan_id: 2202
+    vlan_name: network_db_vlan2202
+    gw_ip_subnet: "10.1.3.1/24"
+    attach_group: esxi
+  - net_name: network_app1
+    vrf_name: *refvrf_red
+    net_id: 30024
+    vlan_id: 2203
+    vlan_name: network_app1_vlan2203
+    gw_ip_subnet: "10.1.4.1/24"
+    attach_group: esxi

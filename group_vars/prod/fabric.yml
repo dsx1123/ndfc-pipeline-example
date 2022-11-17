@@ -1,0 +1,34 @@
+---
+fabric:
+  name: fabric_prod
+  asn: 65001
+  inventory:
+    - seed_ip: 172.31.186.160
+      auth_proto: MD5
+      user_name: admin
+      password: ""
+      max_hops: 0
+      role: spine
+      preserve_config: false
+    - seed_ip: 172.31.217.103
+      auth_proto: MD5
+      user_name: admin
+      password: ""
+      max_hops: 0
+      role: leaf
+      preserve_config: false
+    - seed_ip: 172.31.217.101
+      user_name: admin
+      password: ""
+      max_hops: 0
+      role: leaf
+      preserve_config: false
+    - seed_ip: 172.31.186.156
+      user_name: admin
+      password: ""
+      max_hops: 0
+      role: border
+      preserve_config: false
+vpc_pairs:
+  - peer1: 172.31.217.103
+    peer2: 172.31.217.101

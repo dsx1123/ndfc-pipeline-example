@@ -1,0 +1,43 @@
+---
+- name: Update attachments of network
+  ansible.builtin.set_fact:
+    update_list: "{{ update_list + update }}"
+  loop: "{{ networks }}"
+  loop_control:
+    label: "{{ item.net_name }}"
+    index_var: i
+  vars:
+    update_list: []
+    update:
+      - path: networks[{{ i }}].attach
+        value: "{{ attach_group[item.attach_group] }}"
+  tags:
+    - overlay
+    - network
+
+- name: Update network config
+  ansible.utils.update_fact:
+    updates: "{{ update_list }}"
+  register: updated_network
+  tags:
+    - overlay
+    - network
+
+- name: Current netowrk config
+  ansible.builtin.debug:
+    msg: "{{ item }}"
+  loop: "{{ updated_network.networks }}"
+  loop_control:
+    label: "{{ item.net_name }}"
+  tags:
+    - overlay
+    - network
+
+- name: Create networks
+  cisco.dcnm.dcnm_network:
+    fabric: "{{ fabric.name }}"
+    state: overridden
+    config: "{{ updated_network.networks }}"
+  tags:
+    - overlay
+    - network

@@ -1,0 +1,47 @@
+---
+interface:
+  vpc:
+    - name: vpc10
+      type: vpc
+      switch:
+        - 172.31.217.103
+        - 172.31.217.101
+      profile:
+        admin_state: true
+        mode: trunk
+        peer1_members:
+          - e1/4
+        peer2_members:
+          - e1/4
+        pc_mode: 'active'
+        bpdu_guard: false
+        port_type_fast: true
+        mtu: jumbo
+  loopback:
+    - name: lo10
+      type: lo
+      switch:
+        - 172.31.217.103
+      profile:
+        mode: lo
+        int_vrf: "vrf_red"
+        ipv4_addr: "10.10.10.103"
+        route_tag: "12345"
+    - name: lo10
+      type: lo
+      switch:
+        - 172.31.217.101
+      profile:
+        mode: lo
+        int_vrf: "vrf_red"
+        ipv4_addr: "10.10.10.101"
+        route_tag: "12345"
+    - name: lo10
+      type: lo
+      switch:
+        - 172.31.186.156
+      profile:
+        mode: lo
+        int_vrf: "vrf_red"
+        ipv4_addr: "10.10.10.156"
+        route_tag: "12345"

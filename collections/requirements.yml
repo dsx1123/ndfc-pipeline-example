@@ -1,0 +1,7 @@
+---
+collections:
+  - name: cisco.dcnm
+    version: "2.3.0"
+  - name: ansible.posix
+    version: "1.4.0"
+

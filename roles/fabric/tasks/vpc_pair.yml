@@ -1,0 +1,70 @@
+- name: Get peer1 device info
+  cisco.dcnm.dcnm_inventory:
+    fabric: "{{ fabric.name }}"
+    state: query
+    config:
+      - seed_ip: "{{ peer1 }}"
+  register: result_peer1
+  tags:
+    - vpc_pair
+
+- name: Get peer2 device info
+  cisco.dcnm.dcnm_inventory:
+    fabric: "{{ fabric.name }}"
+    state: query
+    config:
+      - seed_ip: "{{ peer2 }}"
+  register: result_peer2
+  tags:
+    - vpc_pair
+
+- name: Set vpc pair facts
+  ansible.builtin.set_fact:
+    peer1_sn: "{{ result_peer1.response[0].serialNumber }}"
+    peer2_sn: "{{ result_peer2.response[0].serialNumber }}"
+    peer1_is_vpc: "{{ result_peer1.response[0].isVpcConfigured }}"
+    peer2_is_vpc: "{{ result_peer2.response[0].isVpcConfigured }}"
+  tags:
+    - vpc_pair
+
+- name: Create VPC Peers
+  cisco.dcnm.dcnm_rest:
+    method: POST
+    path: "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/vpcpair"
+    json_data: "{{ vars_dict | to_json }}"
+  vars:
+    vars_dict:
+      peerOneId: "{{ peer1_sn }}"
+      peerTwoId: "{{ peer2_sn }}"
+      useVirtualPeerlink: "false"
+  when:
+    - peer1_sn | length > 0
+    - peer2_sn | length > 0
+    - not peer1_is_vpc
+    - not peer2_is_vpc
+  tags:
+    - vpc_pair
+
+- name: Save config of fabric {{ fabric.name }}
+  cisco.dcnm.dcnm_rest:
+    method: POST
+    path: "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{{ fabric.name }}/config-save"
+  when:
+    - peer1_sn | length > 0
+    - peer2_sn | length > 0
+    - not peer1_is_vpc
+    - not peer2_is_vpc
+  tags:
+    - vpc_pair
+
+- name: Re-deploy inventory
+  cisco.dcnm.dcnm_rest:
+    path: "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{{ fabric.name }}/config-deploy?forceShowRun=false"
+    method: POST
+  when:
+    - peer1_sn | length > 0
+    - peer2_sn | length > 0
+    - not peer1_is_vpc
+    - not peer2_is_vpc
+  tags:
+    - vpc_pair

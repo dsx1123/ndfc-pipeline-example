@@ -1,0 +1,77 @@
+---
+- name: Make switch password update list
+  ansible.builtin.set_fact:
+    update_list: "{{ update_list + update }}"
+  loop: "{{ fabric.inventory }}"
+  loop_control:
+    label: "{{ item.seed_ip }}"
+    index_var: i
+  vars:
+    update_list: []
+    update:
+      - path: fabric.inventory[{{ i }}].password
+        value: "{{ switch_password }}"
+  tags:
+    - inventory
+
+- name: Update switch password
+  ansible.utils.update_fact:
+    updates: "{{ update_list }}"
+  register: updated_fabric
+  tags:
+    - inventory
+
+- name: Current inventory of fabric {{ fabric.name }}
+  ansible.builtin.debug:
+    msg: "role: {{ item.role }}"
+  loop: "{{ updated_fabric.fabric.inventory }}"
+  loop_control:
+    label: "{{ item.seed_ip }}"
+  tags:
+    - inventory
+
+- name: Get all fabrics
+  cisco.dcnm.dcnm_rest:
+    method: GET
+    path: "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics"
+  register: res_fabrics
+  tags:
+    - inventory
+
+- name: Check if fabric exists
+  vars:
+    existed: "{{ res_fabrics.response.DATA | selectattr('fabricName', 'in', fabric.name) | list | length == 1 }}"
+  ansible.builtin.set_fact:
+    fabric: "{{ fabric | combine({'existed': existed}) }}"
+  tags:
+    - inventory
+
+- name: Create fabric {{ fabric.name }}
+  vars:
+    payload:
+      BGP_AS: "{{ fabric.asn }}"
+      OVERLAY_MODE: "cli"
+      GRFIELD_DEBUG_FLAG: "Enable"
+  cisco.dcnm.dcnm_rest:
+    method: POST
+    path: "/appcenter/cisco/ndfc/api/v1/lan-fabric/rest/control/fabrics/{{ fabric.name }}/Easy_Fabric_11_1"
+    json_data: "{{ payload | to_json }}"
+  when: not fabric.existed
+  tags:
+    - inventory
+
+- name: Build inventory of fabric {{ fabric.name }}
+  cisco.dcnm.dcnm_inventory:
+    fabric: "{{ fabric.name }}"
+    config: "{{ updated_fabric.fabric.inventory }}"
+  tags:
+    - inventory
+
+- name: Create vpc pair
+  vars:
+    peer1: "{{ item.peer1 }}"
+    peer2: "{{ item.peer2 }}"
+  ansible.builtin.include_tasks: roles/fabric/tasks/vpc_pair.yml
+  loop: "{{ vpc_pairs }}"
+  tags:
+    - vpc_pair

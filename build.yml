@@ -1,0 +1,19 @@
+---
+- name: Build fabric on NDFC
+  hosts: ndfc
+  gather_facts: false
+  roles:
+    - name: fabric
+      tags:
+        - fabric
+    - name: vrf
+      tags:
+        - overlay
+        - vrf
+    - name: interface
+      tags:
+        - interface
+    - name: network
+      tags:
+        - overlay
+        - network

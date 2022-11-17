@@ -1,0 +1,30 @@
+---
+- name: Current vpc config
+  ansible.builtin.debug:
+    msg: "{{ item.name }} of switch {{ item.switch }}"
+  loop: "{{ interface.vpc }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Create vpc
+  cisco.dcnm.dcnm_interface:
+    fabric: "{{ fabric.name }}"
+    config: "{{ interface.vpc }}"
+  tags:
+    - interface
+    - vpc
+
+- name: Current loopback config
+  ansible.builtin.debug:
+    msg: "{{ item.name }} of switch {{ item.switch }}"
+  loop: "{{ interface.loopback }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Create loopback
+  cisco.dcnm.dcnm_interface:
+    fabric: "{{ fabric.name }}"
+    config: "{{ interface.loopback }}"
+  tags:
+    - interface
+    - loopback

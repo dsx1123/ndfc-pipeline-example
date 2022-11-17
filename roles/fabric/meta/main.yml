@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  author: Shangxin Du
+  description: Technical Marketing Engineer
+  license: license (GPL-2.0, MIT, etc)
+  company: Cisco Systems, Inc.
+  min_ansible_version: "2.10"
+  platforms:
+    - name: NXOS
+  galaxy_tags:
+    - ndfc
+    - cisco
+collections:
+  - cisco.dcnm

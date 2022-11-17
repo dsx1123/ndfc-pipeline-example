@@ -1,0 +1,16 @@
+---
+vrf_attach_group:
+  all_leaf:
+    - ip_address: 192.168.123.101
+    - ip_address: 192.168.123.102
+    - ip_address: 192.168.123.103
+attach_group:
+  esxi:
+    - ip_address: 192.168.123.101
+      ports:
+        - Port-channel10
+        - Port-channel20
+    - ip_address: 192.168.123.102
+      ports:
+        - Port-channel10
+        - Port-channel20

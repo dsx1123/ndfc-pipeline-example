@@ -1,0 +1,34 @@
+---
+fabric:
+  name: fabric_stage
+  asn: 65004
+  inventory:
+    - seed_ip: 192.168.123.104
+      auth_proto: MD5
+      user_name: admin
+      password: ""
+      max_hops: 0
+      role: spine
+      preserve_config: false
+    - seed_ip: 192.168.123.101
+      user_name: admin
+      password: ""
+      max_hops: 0
+      role: leaf
+      preserve_config: false
+    - seed_ip: 192.168.123.102
+      user_name: admin
+      password: ""
+      max_hops: 0
+      role: leaf
+      preserve_config: false
+    - seed_ip: 192.168.123.103
+      user_name: admin
+      password: ""
+      max_hops: 0
+      role: border
+      preserve_config: false
+vpc_pairs:
+  - peer1: 192.168.123.101
+    peer2: 192.168.123.102
+
